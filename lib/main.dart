@@ -5,8 +5,10 @@ import 'package:book_on/blocs/internet_bloc.dart';
 import 'package:book_on/blocs/google_sheet_bloc.dart';
 import 'package:book_on/pages/home.dart';
 import 'package:book_on/pages/staff_id.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async  {
+  await dotenv.load(fileName: "assets/.env");
   runApp(BookOnApp());
 }
 

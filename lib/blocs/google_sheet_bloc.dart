@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GoogleSheetBloc extends ChangeNotifier {
-  final String uri =
-      "https://script.google.com/macros/s/AKfycbwOUQOYFnNGqkFjh5WeDpC7PnRvgKoe3WRpzCdIr_dv-PDknN2MtLpATagpN6QkAGoaIQ/exec";
+  final String uri = dotenv.env['GOOGLE_SHEET_URL'];
   final String STATUS_SUCCESS = "SUCCESS";
 
   String _name;
