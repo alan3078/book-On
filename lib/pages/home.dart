@@ -7,9 +7,10 @@ import 'package:book_on/blocs/google_sheet_bloc.dart';
 import 'package:book_on/blocs/internet_bloc.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, @required this.staffId}) : super(key: key);
 
   final String title;
+  final String staffId;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -39,10 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
       googleSheetValid = true;
     });
 
-    if (!ib.hasInternet){
+    if (!ib.hasInternet) {
       openSnacbar(_scaffoldKey, 'check your internet connection!');
     } else {
       print(await sb.getGoogleSheetData());
+      openSnacbar(_scaffoldKey, 'your data submitted');
     }
   }
 
@@ -54,11 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    nameController.text = widget.staffId;
+
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("MTR Form App"),
+        centerTitle: true,
+        title: Text(widget.title),
       ),
       body: Center(
         child: Column(
@@ -72,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TextFormField(
+                        enabled: false,
                         controller: nameController,
                         validator: (value) {
                           if (value.isEmpty) {

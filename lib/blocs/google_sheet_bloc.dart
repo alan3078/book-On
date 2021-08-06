@@ -27,12 +27,9 @@ class GoogleSheetBloc extends ChangeNotifier {
 
   var dio = Dio();
 
-  // Future postData(data) async{
-  //   response = await dio.post(uri,data);
-  // }
-
   Future getGoogleSheetData() async {
     final response = await dio.get(uri);
-    print(response.data);
+    //print(response.data);
+    return response.data;
   }
 }
