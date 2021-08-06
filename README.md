@@ -1,12 +1,9 @@
-# Book On App for stuff
+# Book On App for staff
 
 Interact with Google Sheet
 
 ## Get/Post data through form
 
-Attributes supported:
-
-- [Name]
-- [Email]
-- [phoneNumber]
-- [description]
+-> Check staffId
+-> random question from Google Sheet
+-> submit answer
