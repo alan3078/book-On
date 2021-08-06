@@ -4,6 +4,6 @@ Interact with Google Sheet
 
 ## Get/Post data through form
 
--> Check staffId
--> random question from Google Sheet
--> submit answer
+- Check staffId 
+- => random question from Google Sheet
+- => submit answer
