@@ -6,11 +6,13 @@ import 'package:book_on/utils/snacbar.dart';
 import 'package:book_on/blocs/google_sheet_bloc.dart';
 import 'package:book_on/blocs/internet_bloc.dart';
 
+import 'package:book_on/model/question.dart';
+
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, @required this.staffId}) : super(key: key);
+  MyHomePage({Key key, this.title, @required this.name}) : super(key: key);
 
   final String title;
-  final String staffId;
+  final String name;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -25,14 +27,14 @@ class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool googleSheetValid = false;
+  String question = "";
 
   // TextField Controllers
   TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController mobileNoController = TextEditingController();
-  TextEditingController feedbackController = TextEditingController();
+  TextEditingController questionController = TextEditingController();
+  TextEditingController answerController = TextEditingController();
 
-  getData() async {
+  postAnswer(String answer) async {
     final sb = context.read<GoogleSheetBloc>();
     final ib = context.read<InternetBloc>();
 
@@ -41,22 +43,35 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     if (!ib.hasInternet) {
-      openSnacbar(_scaffoldKey, 'check your internet connection!');
+      openSnacbar(_scaffoldKey, 'check your internet connection!', false);
     } else {
-      print(await sb.getGoogleSheetData());
-      openSnacbar(_scaffoldKey, 'your data submitted');
+      sb.postAnswer(answerController.text);
+      openSnacbar(_scaffoldKey, 'your data submitted', false);
     }
   }
 
-  // Method to show snackbar with 'message'.
-  // _showSnackbar(String message) {
-  //   final snackBar = SnackBar(content: Text(message));
-  //   _scaffoldKey.currentState.showSnackBar(snackBar);
-  // }
+  showFinishDialog() {
+    return (showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Your data has submitted'),
+        content: const Text('Press OK to exit'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = widget.staffId;
+    final sb = context.watch<GoogleSheetBloc>();
+    nameController.text = widget.name;
+    questionController.text = sb.question;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -88,39 +103,21 @@ class _MyHomePageState extends State<MyHomePage> {
                         decoration: InputDecoration(labelText: 'Name'),
                       ),
                       TextFormField(
-                        controller: emailController,
-                        validator: (value) {
-                          if (!value.contains("@")) {
-                            return 'Enter Valid Email';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(labelText: 'Email'),
+                        enabled: false,
+                        controller: questionController,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(labelText: 'Question'),
                       ),
                       TextFormField(
-                        controller: mobileNoController,
-                        validator: (value) {
-                          if (value.trim().length != 8) {
-                            return 'Enter 8 Digit Mobile Number';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Mobile Number',
-                        ),
-                      ),
-                      TextFormField(
-                        controller: feedbackController,
+                        controller: answerController,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return 'Enter Valid Feedback';
+                            return 'Enter Valid Answer';
                           }
                           return null;
                         },
                         keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(labelText: 'Feedback'),
+                        decoration: InputDecoration(labelText: 'Answer'),
                       ),
                     ],
                   ),
@@ -129,21 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.blue,
               textColor: Colors.white,
               //onPressed: _submitForm,
-              onPressed: getData,
-              child: Text('Submit Feedback'),
-            ),
-            RaisedButton(
-              color: Colors.lightBlueAccent,
-              textColor: Colors.black,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      //builder: (context) => FeedbackListScreen(),
-                      builder: (context) => null,
-                    ));
+              onPressed: () => {
+                if (_formKey.currentState.validate())
+                  {postAnswer(answerController.text), showFinishDialog()}
               },
-              child: Text('View Feedback'),
+              child: Text('Submit Booking'),
             ),
           ],
         ),
